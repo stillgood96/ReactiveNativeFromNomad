@@ -1,30 +1,31 @@
 import React, { useState } from "react";
 import AppLoading from "expo-app-loading";
-import { Text, Image } from "react-native";
+import { Text, Image, useColorScheme } from "react-native";
 import * as Font from 'expo-font';
-import {Ionicons} from '@expo/vector-icons'
-import { Asset } from 'expo-asset';
+import {Ionicons, FontAwesome} from '@expo/vector-icons'
+import { Asset, useAssets } from 'expo-asset';
+import { NavigationContainer, DarkTheme, DefaultTheme } from "@react-navigation/native";
+import Tabs from "./navigation/Tabs";
+import Stack from "./navigation/Stack";
+import Root from "./navigation/Root";
+import { ThemeProvider } from "styled-components/native";
+import { darkTheme, lightTheme } from "./Styled.js";
 
 
 export default function App() {
-  const [ready, setReady] = useState(false);
-  const onFinish = () => setReady(true);
-  const startLoading = async () => {
-    await Font.loadAsync(Ionicons.font);
-    await Asset.loadAsync(requiredI('./images/어빙.jpeg'));
-    await Image.prefetch("https://cdn.rookie.co.kr/news/photo/202102/57006_58898_5351.jpg")
-    
-  };
+  const [assets, error] = useAssets([require('./images/irving.jpeg')]);
+  const [loaded] = Font.useFonts(Ionicons.font);
 
-  if (!ready) {
-    return (
-      <AppLoading
-        startAsync={startLoading}
-        onFinish={onFinish}
-        onError={console.log}
-      />
-    );
+  const isDark = useColorScheme() === "dark";
+  if(!assets || !loaded) {
+    return <AppLoading/>;
   }
-
-  return <Text>We are done loading!</Text>;
+  
+  return (
+    <ThemeProvider theme={isDark ? lightTheme : darkTheme}>
+      <NavigationContainer>
+        <Root/>
+      </NavigationContainer>
+    </ThemeProvider>
+  );
 }
