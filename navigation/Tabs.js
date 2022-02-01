@@ -12,9 +12,14 @@ const Tabs = () => {
     const isDark = useColorScheme() === "dark";
     
     return(
-        <Tab.Navigator screenOptions = {{tabBarStyle : {
+        <Tab.Navigator 
+            sceneContainerStyle = {{
+                backgroundColor : isDark ? "white" :"white",
+            }}
+
+            screenOptions = {{tabBarStyle : {
             backgroundColor : isDark ? "black" : "white" },
-            tabBarActiveTintColor : isDark ? "yellow" : "black",
+            tabBarActiveTintColor : isDark ? "orange" : "orange",
             tabBarInactiveTintColor : isDark ? "white" : "black",
             headerStyle : {
                 backgroundColor : isDark ? "black" : "white"
@@ -29,8 +34,7 @@ const Tabs = () => {
             }
         }}>
             <Tab.Screen name="Movies" component={Movies} options={{
-                tabBarIcon : ({focused, color, size}) => {
-                    console.log(focused, color, size);
+                tabBarIcon : ({focused, color, size}) => {                
                     return <Ionicons name={focused ? "film" : "film-outline"} color={color} size={size}/>
                 }
             }}/>
