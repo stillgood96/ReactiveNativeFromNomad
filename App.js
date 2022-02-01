@@ -22,7 +22,7 @@ export default function App() {
   }
   
   return (
-    <ThemeProvider theme={isDark ? lightTheme : darkTheme}>
+    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
       <NavigationContainer>
         <Root/>
       </NavigationContainer>
