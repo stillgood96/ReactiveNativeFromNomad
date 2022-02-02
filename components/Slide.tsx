@@ -63,7 +63,7 @@ const Slide : React.FC<SliderProps> = ({
             style= {StyleSheet.absoluteFill}/>
             <BlurView
             tint ={isDark? "dark" : "light"}
-            intensity ={80}
+            intensity ={25}
             style= {StyleSheet.absoluteFill}>
 
                 <Wrapper>           
