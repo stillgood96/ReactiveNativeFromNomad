@@ -10,8 +10,8 @@ import VMedia from "../components/VMedia";
 const API_KEY ="bb68d517d93b8c0952646528f5a290de";
 
 
-const Container = styled.ScrollView`
-background-color: ${props => props.theme.mainBgColor}
+const Container = styled.FlatList`
+    background-color: ${props => props.theme.mainBgColor}
 `;
 
 const Loader = styled.View`
@@ -88,66 +88,70 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
       <ActivityIndicator />
     </Loader>
   ) : (
+
     <Container
-      refreshControl={
-        <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
-      }
-    >
-      <Swiper
-        horizontal
-        loop
-        autoplay
-        autoplayTimeout={3.5}
-        showsButtons={false}
-        showsPagination={false}
-        containerStyle={{
-          marginBottom: 40,
-          width: "100%",
-          height: SCREEN_HEIGHT / 4,
-        }}
-      >
-        {nowPlaying.map((movie) => (
-          <Slide
-            key={movie.id}
-            backdropPath={movie.backdrop_path}
-            posterPath={movie.poster_path}
-            originalTitle={movie.original_title}
-            voteAverage={movie.vote_average}
-            overview={movie.overview}
-          />
-        ))}
-      </Swiper>
-      <ListContainer>
-        <ListTitle>Trending Movies</ListTitle>
-        <TrendingScroll 
-            data={trending}
-            contentContainerStyle={{ paddingHorizontal: 30 }}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        data={upcoming}
+        keyExtractor={(item) => item.id + ""}
+        ItemSeparatorComponent ={() => <View style={{height:20}}></View>}
+        renderItem={({item}) => <HMedia
+        posterPath={item.poster_path}
+        originalTitle={item.original_title}
+        overview={item.overview}
+        releaseDate={item.release_date}
+        />}
+        ListHeaderComponent={<>
+            <Swiper
             horizontal
-            keyExtractor={(item) => item.id + ""}
-            showsHorizontalScrollIndicator={false}
-            ItemSeparatorComponent ={() => <View style={{width:30}}></View>}
-            renderItem={ ({item}) => 
-                <VMedia
-                    posterPath={item.poster_path}
-                    originalTitle={item.original_title}
-                    voteAverage={item.vote_average}
-                />
-            }
+            loop
+            autoplay
+            autoplayTimeout={3.5}
+            showsButtons={false}
+            showsPagination={false}
+            containerStyle={{
+            marginBottom: 40,
+            width: "100%",
+            height: SCREEN_HEIGHT / 4,
+            }}
         >
-            
-        </TrendingScroll>
-      </ListContainer>
-      <ComingSoonTitle>Coming soon</ComingSoonTitle>
-      {upcoming.map((movie) => (
-        <HMedia
-          key={movie.id}
-          posterPath={movie.poster_path}
-          originalTitle={movie.original_title}
-          overview={movie.overview}
-          releaseDate={movie.release_date}
-        />
-      ))}
-    </Container>
+            {nowPlaying.map((movie) => (
+            <Slide
+                key={movie.id}
+                backdropPath={movie.backdrop_path}
+                posterPath={movie.poster_path}
+                originalTitle={movie.original_title}
+                voteAverage={movie.vote_average}
+                overview={movie.overview}
+            />
+            ))}
+        </Swiper>
+        <ListContainer>
+            <ListTitle>Trending Movies</ListTitle>
+            <TrendingScroll 
+                data={trending}
+                contentContainerStyle={{ paddingHorizontal: 30 }}
+                horizontal
+                keyExtractor={(item) => item.id + ""}
+                showsHorizontalScrollIndicator={false}
+                ItemSeparatorComponent ={() => <View style={{width:30}}></View>}
+                renderItem={ ({item}) => 
+                    <VMedia
+                        posterPath={item.poster_path}
+                        originalTitle={item.original_title}
+                        voteAverage={item.vote_average}
+                    />
+                }
+            >
+                
+            </TrendingScroll>
+        </ListContainer>
+        <ComingSoonTitle>Coming soon</ComingSoonTitle>
+        </>}
+    >
+  </Container>
+     
+
   );
 };
 
