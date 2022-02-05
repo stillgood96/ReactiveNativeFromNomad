@@ -7,5 +7,8 @@
       "**/*"
     ]
   },
-  "name": "noovies"
+  "name": "noovies",
+  "expo": {
+    "userInterfaceStyle": "automatic"
+  }
 }
