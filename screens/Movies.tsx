@@ -6,21 +6,15 @@ import { useQuery, useQueryClient } from "react-query";
 import styled from "styled-components/native";
 import { Movie, MovieResponse, moviesApi } from "../api";
 import HMedia from "../components/HMedia";
+import Loader from "../components/Loader";
 import Slide from "../components/Slide";
 import VMedia from "../components/VMedia";
-
-
 
 
 const Container = styled.FlatList`
     background-color: ${props => props.theme.mainBgColor}
 `as unknown as typeof FlatList;
 
-const Loader = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -64,9 +58,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   const refreshing = isRefetchingNowPlaying || isRefetchingTrending || isRefetchingUpcoming;
   
   return loading ? (
-    <Loader>
-      <ActivityIndicator />
-    </Loader>
+    <Loader/>
   ) : (
     upcomingData ? <Container
         onRefresh={onRefresh}
@@ -130,8 +122,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
             
         </ListContainer>
         <ComingSoonTitle>Coming soon</ComingSoonTitle>
-        </>}
-         /> : null
+        </>}/> : null
   );
 
 };
