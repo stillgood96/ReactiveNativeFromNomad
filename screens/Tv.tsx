@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components/native";
 import {FlatList, RefreshControl, ScrollView} from "react-native";
 import { QueryClient, useQuery, useQueryClient } from "react-query";
@@ -13,29 +13,30 @@ const tvView = styled.View`
 
 const Tv = () => {
     const queryClient = useQueryClient();
-    const {isLoading:todayLoading , data: todayData, isRefetching:todayRefetching} = useQuery(
+    const {isLoading:todayLoading , data: todayData} = useQuery(
         ["tv", "today"], 
         tvApi.airingToday
     );
-    const {isLoading:topLoading , data: topData , isRefetching:topRefetching} = useQuery(
+    const {isLoading:topLoading , data: topData } = useQuery(
         ["tv", "top"], 
         tvApi.topRated
     );
-    const {isLoading:trendingLoading , data: trendingData, isRefetching:trendingRefetching} = useQuery(
+    const {isLoading:trendingLoading , data: trendingData} = useQuery(
         ["tv", "trending"], 
         tvApi.trending
     );
             
     const loading = todayLoading || topLoading || trendingLoading;
+    const [refreshing, setRefreshing] = useState(false);
     
     if(loading) {
         return <Loader/>
     }
-
-    const refreshing = todayRefetching || topRefetching ||trendingRefetching;
     
-    const onRefresh = () => {
-        queryClient.refetchQueries(["tv"])
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await queryClient.refetchQueries(["tv"])
+        setRefreshing(false);
     }
     return(
         <ScrollView style= {{backgroundColor : "#1e272e"}}

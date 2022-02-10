@@ -47,16 +47,20 @@ const HSeperator = styled.View`
 
 const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   const queryClient = useQueryClient();
-  const {isLoading:nowPlayingLoading, data:nowPlayingData, isRefetching : isRefetchingNowPlaying  } = useQuery<MovieResponse>(["movies" , "nowPlaying"], moviesApi.nowPlaying);
-  const {isLoading:trendingLoading, data:trendingData, isRefetching : isRefetchingTrending} = useQuery<MovieResponse>(["movies" , "trending"], moviesApi.trending);
-  const {isLoading:upcomingLoading,data:upcomingData,  isRefetching : isRefetchingUpcoming} = useQuery<MovieResponse>(["movies" , "upcoming"], moviesApi.upcoming);
+  const {isLoading:nowPlayingLoading, data:nowPlayingData } = useQuery<MovieResponse>(["movies" , "nowPlaying"], moviesApi.nowPlaying);
+  const {isLoading:trendingLoading, data:trendingData } = useQuery<MovieResponse>(["movies" , "trending"], moviesApi.trending);
+  const {isLoading:upcomingLoading,data:upcomingData  } = useQuery<MovieResponse>(["movies" , "upcoming"], moviesApi.upcoming);
   
+  const [refreshing, setRfreshing] = useState(false);
+
   const onRefresh = async () => {
-      queryClient.refetchQueries(["movies"]);
+    setRfreshing(true);
+    await queryClient.refetchQueries(["movies"]);
+    setRfreshing(false);
   };
 
   const loading = nowPlayingLoading || trendingLoading || upcomingLoading ;
-  const refreshing = isRefetchingNowPlaying || isRefetchingTrending || isRefetchingUpcoming;
+  
   
   return loading ? (
     <Loader/>
