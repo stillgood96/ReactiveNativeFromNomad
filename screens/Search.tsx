@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { useQuery } from "react-query";
 import styled from "styled-components/native";
+import { moviesApi, tvApi } from "../api";
 
 const Container = styled.ScrollView``;
 const SearchBar = styled.TextInput`
@@ -13,7 +15,24 @@ const SearchBar = styled.TextInput`
 const Search = () => {
     const [query, setQuery] = useState("");
     const onChangeText = (text:string) => setQuery(text);
-    console.log(query);
+    const {isLoading: movieLoading, data: moviesData, refetch: searchMovies} = useQuery(["search", query], moviesApi.search,{
+        enabled: false
+    });
+    const {isLoading: tvLoading, data: tvData, refetch: searchTv} = useQuery(["search", query], tvApi.search,{
+        enabled: false
+    });
+
+    const onSubmit = () => {
+        if(query === "") {
+            return;
+        }
+        searchMovies();
+        searchTv();
+    }
+
+
+
+
 
     return(
         <Container
@@ -23,6 +42,7 @@ const Search = () => {
                 placeholderTextColor="grey"
                 returnKeyType="search"
                 onChangeText={onChangeText}
+                onSubmitEditing={onSubmit}
             />
         </Container>
     );
