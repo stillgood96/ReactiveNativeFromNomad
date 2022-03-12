@@ -5,6 +5,7 @@ import styled from "styled-components/native";
 import Poster from "./Poster";
 import { makeImagePath } from "../utils";
 import { useNavigation } from "@react-navigation/native";
+import { Movie } from "../api";
 
 const BgImg = styled.Image`
     width: 100%;
@@ -48,13 +49,16 @@ interface SliderProps {
     originalTitle : string;
     voteAverage: number;
     overview: string;
+    fullData : Movie;
 };
 
 const Slide : React.FC<SliderProps> = ({
     backdropPath, 
     posterPath, 
     originalTitle, 
-    voteAverage, overview
+    voteAverage, 
+    overview,
+    fullData
 }) => {
     const isDark = useColorScheme() === "dark";
     const navigation = useNavigation();
@@ -62,7 +66,7 @@ const Slide : React.FC<SliderProps> = ({
         navigation.navigate("Stack", {
           screen : "Detail", 
           params : {
-            originalTitle
+            ...fullData
           }
       }); 
       }
