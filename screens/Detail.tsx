@@ -2,10 +2,11 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useEffect } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import styled from "styled-components/native";
-import { Movie, TV } from "../api";
+import { Movie, moviesApi, TV, tvApi } from "../api";
 import Poster from "../components/Poster";
 import { makeImagePath } from "../utils";
 import { LinearGradient } from 'expo-linear-gradient';
+import { useQuery } from "react-query";
 
 
 
@@ -53,7 +54,14 @@ const Detail: React.FC<DetailScreenProps> = ({
         params    
     }
     }) => {
+    const {isLoading: moviesLoading, data:moviesData} = useQuery(["movies", params.id], moviesApi.detail, {
+        enabled: 'original_title' in params
+    });
+    const {isLoading : tvLoading, data:tvData} = useQuery(["tv", params.id], tvApi.detail, {
+        enabled: 'original_name' in params
+    });
     
+    console.log(params.id);
     useEffect( ()=> {
         setOptions({
             title: 'original_title' in params ? 
@@ -61,7 +69,6 @@ const Detail: React.FC<DetailScreenProps> = ({
         });
         
     }, []);
-    
     
     return(
         <Container>
