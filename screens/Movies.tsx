@@ -48,8 +48,18 @@ const HSeperator = styled.View`
 const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   const queryClient = useQueryClient();
   const {isLoading:nowPlayingLoading, data:nowPlayingData } = useQuery<MovieResponse>(["movies" , "nowPlaying"], moviesApi.nowPlaying);
-  const {isLoading:trendingLoading, data:trendingData } = useQuery<MovieResponse>(["movies" , "trending"], moviesApi.trending);
-  const {isLoading:upcomingLoading,data:upcomingData  } = useInfiniteQuery<MovieResponse>(["movies" , "upcoming"], moviesApi.upcoming);
+  const {isLoading:trendingLoading, data:trendingData } = useInfiniteQuery<MovieResponse>(["movies" , "trending"], moviesApi.trending);
+  const {isLoading:upcomingLoading,data:upcomingData, hasNextPage, fetchNextPage  } = useInfiniteQuery<MovieResponse>(
+    ["movies" , "upcoming"], 
+    moviesApi.upcoming,
+    {
+      getNextPageParam : (currentPage) => {
+        const nextPage = currentPage.page +1;
+        return nextPage > currentPage.total_pages ? null : nextPage;
+      }
+    }
+    
+    );
   
   const [refreshing, setRfreshing] = useState(false);
   
@@ -62,7 +72,9 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
 
   const loading = nowPlayingLoading || trendingLoading || upcomingLoading ;
   const loadMore = () => {
-    alert("loadMore");
+    if(hasNextPage) {
+      fetchNextPage();
+    }
   };
   
   
