@@ -1,8 +1,8 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Dimensions, FlatList, RefreshControl, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Dimensions, FlatList, RefreshControl, Text, View } from "react-native";
 import Swiper from "react-native-swiper";
-import { useQuery, useQueryClient } from "react-query";
+import { useInfiniteQuery, useQuery, useQueryClient } from "react-query";
 import styled from "styled-components/native";
 import { Movie, MovieResponse, moviesApi } from "../api";
 import HList from "../components/HList";
@@ -49,9 +49,10 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   const queryClient = useQueryClient();
   const {isLoading:nowPlayingLoading, data:nowPlayingData } = useQuery<MovieResponse>(["movies" , "nowPlaying"], moviesApi.nowPlaying);
   const {isLoading:trendingLoading, data:trendingData } = useQuery<MovieResponse>(["movies" , "trending"], moviesApi.trending);
-  const {isLoading:upcomingLoading,data:upcomingData  } = useQuery<MovieResponse>(["movies" , "upcoming"], moviesApi.upcoming);
+  const {isLoading:upcomingLoading,data:upcomingData  } = useInfiniteQuery<MovieResponse>(["movies" , "upcoming"], moviesApi.upcoming);
   
   const [refreshing, setRfreshing] = useState(false);
+  
 
   const onRefresh = async () => {
     setRfreshing(true);
@@ -60,14 +61,19 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
   };
 
   const loading = nowPlayingLoading || trendingLoading || upcomingLoading ;
+  const loadMore = () => {
+    alert("loadMore");
+  };
   
   
   return loading ? (
     <Loader/>
   ) : (
     upcomingData ? <Container
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.4}
         onRefresh={onRefresh}
-        data={upcomingData.results}
+        data={upcomingData.pages.map( (page) => page.results).flat()}
         refreshing={refreshing}
         keyExtractor={(item) => item .id + ""}
         ItemSeparatorComponent ={() => <HSeperator/>}
@@ -115,3 +121,14 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
 
 };
 export default Movies;
+
+
+/*{
+"pageParams": [undefined],
+"pages": [
+  {"dates": [Object], "page": 1, "results": [Array], "total_pages": 18, "total_results": 348}
+  {"dates": [Object], "page": 2, "results": [Array], "total_pages": 18, "total_results": 348}
+  {"dates": [Object], "page": 3, "results": [Array], "total_pages": 18, "total_results": 348}
+  {"dates": [Object], "page": 4, "results": [Array], "total_pages": 18, "total_results": 348}
+  ]
+}*/
