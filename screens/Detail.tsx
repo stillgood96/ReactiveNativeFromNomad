@@ -95,11 +95,7 @@ const Detail: React.FC<DetailScreenProps> = ({
 
 
     };
-    const ShareButton = () => (
-    <TouchableOpacity onPress={ShareMedia}>
-        <Ionicons name="share-outline" color="white" size={24}/>
-    </TouchableOpacity>
-    );
+    
     
     
 
@@ -120,7 +116,10 @@ const Detail: React.FC<DetailScreenProps> = ({
     useEffect(() => {
         if(data) {
             setOptions( {
-                headerRight : () => <ShareButton/>,
+                headerRight : () => (
+                    <TouchableOpacity onPress={ShareMedia}>
+                        <Ionicons name="share-outline" color="white" size={24}/>
+                    </TouchableOpacity>)
             });
         }       
     }, [data])
