@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useEffect } from "react";
-import { Dimensions, StyleSheet, Linking } from "react-native";
+import { Dimensions, StyleSheet, TouchableOpacity, Share, Platform } from "react-native";
 import styled from "styled-components/native";
 import { Movie, moviesApi, TV, tvApi } from "../api";
 import Poster from "../components/Poster";
@@ -69,16 +69,38 @@ const Detail: React.FC<DetailScreenProps> = ({
         params    
     }
     }) => {
+    const isMovie = "original_title" in params; 
 
-    const isMovie = "original_title" in params;
     const {isLoading, data} = useQuery(
         [isMovie ? "movies" : "tv", params.id], 
         isMovie? moviesApi.detail : tvApi.detail,        
     );
 
-    const {isLoading : tvLoading, data:tvData} = useQuery(["tv", params.id], tvApi.detail, {
-        enabled: 'original_name' in params
-    });
+    const ShareMedia = async() => {
+        const isAndroid = Platform.OS === "android";
+        const homepage =  isMovie? `https://www.imdb.com/title/${data.imdb_id}` : data.homepage;
+        if(isAndroid) {
+            await Share.share({
+                message: `${params.overview}\nCheck it out: ${homepage}`,
+                title :  'original_title' in params ? 
+                params.original_title : params.original_name,
+            })                
+        }else {
+            await Share.share({
+                url : homepage,                
+                title :  'original_title' in params ? 
+                params.original_title : params.original_name,
+            })
+        }
+
+
+    };
+    const ShareButton = () => (
+    <TouchableOpacity onPress={ShareMedia}>
+        <Ionicons name="share-outline" color="white" size={24}/>
+    </TouchableOpacity>
+    );
+    
     
 
     const openYTLink =async(videoID: string) => {
@@ -89,11 +111,19 @@ const Detail: React.FC<DetailScreenProps> = ({
 
     useEffect( ()=> {
         setOptions({
-            title: 'original_title' in params ? 
-                "Movie" : "TV Show"
+            title: 'original_title' in params ? "Movie" : "TV Show",
+            
         });
         
     }, []);
+
+    useEffect(() => {
+        if(data) {
+            setOptions( {
+                headerRight : () => <ShareButton/>,
+            });
+        }       
+    }, [data])
     
     return(
         <Container>
